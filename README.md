@@ -1,2 +1,2 @@
 # project5_backend
-MyBikeDatabase migrated to Azure Cloud
+MyBikeDatabase (project 3) migrated to Azure Cloud
