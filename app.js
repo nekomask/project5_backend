@@ -30,7 +30,6 @@ app.use(session({
    
 }));
 
-
 app.use('/items', itemController);
 const port = process.env.PORT || 3001
 app.listen(port, () => {
