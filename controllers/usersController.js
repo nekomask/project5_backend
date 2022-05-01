@@ -5,12 +5,26 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const isLoggedIn = require('../middleware/isLoggedIn')
 const alert =require('alert')
+
+
 // INDEX: GET
 // /users
 // Gives a page displaying all the users
-router.get('/login', (req, res)=>{
-    res.render('login.ejs')
+router.get('/', (req, res)=>{
+    try{
+  const users = await User.find();
+  res.send ({
+      status: 200,
+      data: users
+  })
+} catch (err) {
+    res.send ({
+        status: 500,
+        data: err
+    })
+}
 })
+
 router.post("/login", async (req, res)=>{
     try{
         // Grab the user from the database with the username from the form
@@ -25,32 +39,45 @@ router.post("/login", async (req, res)=>{
                 // It's a match! Successful login!
                 req.session.isLoggedIn = true;
                 req.session.userId = possibleUser._id;
-                res.redirect("/items")
+                res.send ({
+                    status: 200,
+                    data: possibleUser
+                })
             }else{
                 alert('password does not match records')
-                res.redirect("/users/login")
+                res.send ({
+                    status: 200,
+                    data: "password does not match records"
+                })
             }
         }else{
             // Let them try again?
             alert('User name does not exist')
-            res.redirect("/users/login")
+            res.send ({
+                status: 200,
+                data: "Username does not exist"
+            })
         }
     }catch(err){
         console.log(err);
         res.send(500)
     }
 })
-router.get('/logout', (req, res)=>{
-    req.session.destroy(()=>{
-        res.redirect("/items")
-    })
-})
+
+// router.get('/logout', (req, res)=>{
+//     req.session.destroy(()=>{
+//         res.redirect("/items")
+//     })
+// })
+
 router.get('/',  async (req, res)=>{
     const users = await User.find();
-    res.render('users/index.ejs', {
-        users: users,
+    res.send({
+        status: 200,
+        users: users
     })
 })
+
 // NEW: GET
 // /users/new
 // Shows a form to create a new user
@@ -64,9 +91,9 @@ router.get('/new', (req, res)=>{
 router.get('/:id', async (req, res)=>{
     const user = await User.findById(req.params.id)
     const userItems = await Items.find({user : req.session.userId})
-    res.render("users/show.ejs", {
-        users: user,
-        items : userItems
+    res.send({
+        status: 200,
+        data: user
     })
 })
 
@@ -85,12 +112,18 @@ router.post('/', async (req, res)=>{
         if (user) {
             req.session.isLoggedIn = true;
             req.session.userId = user._id;
-            res.redirect('/items')
+            res.send({
+                status: 200,
+                data: newUser
+            })
         }
     }catch(err) {
         console.log(err)
         alert('sorry this user name is already used. \n please try a different one')
-        res.redirect('/users/new')
+        res.send({
+            status: 500,
+            data: "Sorry this username is already taken"
+        })
     }
 })
 
@@ -101,9 +134,11 @@ router.get('/:id/edit', async (req, res)=>{
     try{
         if(req.session.userId === req.params.id){
             const user = await User.findById(req.params.id)
-            res.render('users/edit.ejs', {
-                user: user
+            res.send({
+                status: 200,
+                data: user
             })
+    
         }else{
             throw new Error("You're NOT THAT USER!")
         }
@@ -118,7 +153,10 @@ router.get('/:id/edit', async (req, res)=>{
 router.put('/:id', async (req, res)=>{
    try{
         await User.findByIdAndUpdate(req.params.id, req.body)
-        res.redirect(`/users/${req.params.id}`)
+        res.send({
+            status: 200,
+            data: user
+        })
    }catch(err){
         res.sendStatus(500)
    }
@@ -129,7 +167,10 @@ router.put('/:id', async (req, res)=>{
 router.delete('/:id', async (req, res)=>{
     try{
         await User.findByIdAndDelete(req.params.id)
-        res.redirect('/users')
+        res.send({
+            status: 200,
+            data: user
+        })
     }catch(err){
         res.sendStatus(500)
     }
