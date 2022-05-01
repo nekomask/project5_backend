@@ -54,7 +54,7 @@ router.post("/login", async (req, res)=>{
             // Let them try again?
             alert('User name does not exist')
             res.send ({
-                status: 200,
+                status: 500,
                 data: "Username does not exist"
             })
         }
@@ -78,12 +78,6 @@ router.get('/',  async (req, res)=>{
     })
 })
 
-// NEW: GET
-// /users/new
-// Shows a form to create a new user
-router.get('/new', (req, res)=>{
-    res.render('users/new.ejs')
-})
 
 // SHOW: GET
 // /users/:id
@@ -152,7 +146,7 @@ router.get('/:id/edit', async (req, res)=>{
 // UPDATE THE USER WITH THE SPECIFIC ID
 router.put('/:id', async (req, res)=>{
    try{
-        await User.findByIdAndUpdate(req.params.id, req.body)
+       const user = await User.findByIdAndUpdate(req.params.id, req.body)
         res.send({
             status: 200,
             data: user
@@ -166,7 +160,7 @@ router.put('/:id', async (req, res)=>{
 // DELETE THE USER WITH THE SPECIFIC ID
 router.delete('/:id', async (req, res)=>{
     try{
-        await User.findByIdAndDelete(req.params.id)
+        const user = await User.findByIdAndDelete(req.params.id)
         res.send({
             status: 200,
             data: user
