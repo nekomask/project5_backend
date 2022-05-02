@@ -27,8 +27,8 @@ app.use(express.json());
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
-   
+    saveUninitialized: false,
+   store: store
 }));
 
 app.use('/users', usersController)
