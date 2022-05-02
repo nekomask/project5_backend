@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const itemSchema = new Schema({
 productName: {type:String},
+user: {type: Schema.Types.ObjectId, ref: 'User'},
 color: {type:String},
 frameType: {type: String },
 frameHeight: {type: String},

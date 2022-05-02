@@ -4,7 +4,6 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const isLoggedIn = require('../middleware/isLoggedIn')
-const alert =require('alert')
 
 
 // INDEX: GET
@@ -44,7 +43,7 @@ router.post("/login", async (req, res)=>{
                     data: possibleUser
                 })
             }else{
-                alert('password does not match records')
+
                 res.send ({
                     status: 200,
                     data: "password does not match records"
@@ -52,7 +51,7 @@ router.post("/login", async (req, res)=>{
             }
         }else{
             // Let them try again?
-            alert('User name does not exist')
+
             res.send ({
                 status: 500,
                 data: "Username does not exist"
@@ -113,10 +112,9 @@ router.post('/', async (req, res)=>{
         }
     }catch(err) {
         console.log(err)
-        alert('sorry this user name is already used. \n please try a different one')
         res.send({
             status: 500,
-            data: "Sorry this username is already taken"
+            data: "Sorry this username is already taken \n please try a different one"
         })
     }
 })
