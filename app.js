@@ -22,6 +22,7 @@ db.on('disconnected', () => console.log('mongo disconnected'))
 
 app.use(morgan('short'))
 app.use(cors({
+    methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH'],
     origin: ['*']
 }))
 app.use(express.urlencoded({ extended: true }));
