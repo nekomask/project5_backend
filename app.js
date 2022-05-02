@@ -22,7 +22,7 @@ db.on('disconnected', () => console.log('mongo disconnected'))
 
 app.use(morgan('short'))
 app.use(cors({
-    origin: '*'
+    origin: ['*']
 }))
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
