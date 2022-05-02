@@ -7,6 +7,7 @@ const morgan = require('morgan')
 const app = express();
 const session = require('express-session');
 const itemController = require("./controllers/itemController")
+const usersController = require("./controllers/usersController")
 
 const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/karolin_mongoose_store'
 
@@ -30,6 +31,7 @@ app.use(session({
    
 }));
 
+app.use('/users', usersController)
 app.use('/items', itemController);
 const port = process.env.PORT || 3001
 app.listen(port, () => {

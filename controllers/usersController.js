@@ -10,7 +10,7 @@ const alert =require('alert')
 // INDEX: GET
 // /users
 // Gives a page displaying all the users
-router.get('/', (req, res)=>{
+router.get('/', async (req, res)=>{
     try{
   const users = await User.find();
   res.send ({
