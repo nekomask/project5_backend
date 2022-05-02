@@ -21,7 +21,9 @@ db.on('error', err => console.log(err.message + ' is Mongod not running?'))
 db.on('disconnected', () => console.log('mongo disconnected'))
 
 app.use(morgan('short'))
-app.use(cors())
+app.use(cors({
+    origin: 'http://https://mybikedatabase-backend.herokuapp.com'
+}))
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(session({
