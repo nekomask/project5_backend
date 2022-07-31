@@ -24,6 +24,8 @@ router.get('/', async (req, res)=>{
 }
 })
 
+
+
 router.post("/login", async (req, res)=>{
     try{
         // Grab the user from the database with the username from the form
@@ -42,6 +44,7 @@ router.post("/login", async (req, res)=>{
                     status: 200,
                     data: possibleUser
                 })
+                res.redirect("/create")
             }else{
 
                 res.send ({

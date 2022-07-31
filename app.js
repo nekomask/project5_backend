@@ -35,9 +35,7 @@ app.use(session({
 
 app.use('/users', usersController)
 app.use('/items', isLoggedIn, itemController);
-app.get('/login', (req, res) => {
-    res.render(props.Login)
-})
+
 
 
 const port = process.env.PORT || 3001
