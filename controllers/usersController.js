@@ -24,7 +24,12 @@ router.get('/', async (req, res)=>{
 }
 })
 
+// I would comment this out for now, I don't think this is useful
+// Since this is an API, the redirect to `/create` is doing something weird
 
+// router.get('/login', (req, res)=>{
+//     res.redirect('/create')
+// })
 
 router.post("/login", async (req, res)=>{
     try{
@@ -40,25 +45,22 @@ router.post("/login", async (req, res)=>{
                 // It's a match! Successful login!
                 req.session.isLoggedIn = true;
                 req.session.userId = possibleUser._id;
-                res.send ({
-                    status: 200,
-                    data: possibleUser
-                })
-                res.redirect("/create")
+                res.send(200)
+                //res.redirect("/create") // <- No more redirect in this case - the browser frontend code manages its own state
             }else{
-
-                res.send ({
-                    status: 200,
-                    data: "password does not match records"
-                })
+                res.send(JSON.stringify({ error: 'password does not match recoreds'}))
+                
+                // EDWARD: Don't redirect in this case, instead send back a 401 UNAUTHORIZED
+                res.send(401)
             }
         }else{
             // Let them try again?
 
-            res.send ({
-                status: 500,
-                data: "Username does not exist"
-            })
+            // EDWARD: You can't alert here, this is the API.  Send back JSON
+            res.send(JSON.stringify({ error: 'User name does not exist'}))
+
+            // EDWARD: Don't redirect in this case, instead send back a 401 UNAUTHORIZED
+            res.send(401)
         }
     }catch(err){
         console.log(err);

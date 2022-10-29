@@ -7,7 +7,7 @@ const User = require('./models/users')
 const morgan = require('morgan')
 const app = express();
 const session = require('express-session');
-const isLoggedIn = require('./middleware/isLoggedIn')
+//const isLoggedIn = require('./middleware/isLoggedIn')
 const itemController = require("./controllers/itemController")
 const usersController = require("./controllers/usersController");
 
@@ -23,7 +23,7 @@ db.on('error', err => console.log(err.message + ' is Mongod not running?'))
 db.on('disconnected', () => console.log('mongo disconnected'))
 
 app.use(morgan('short'))
-app.use(cors())
+app.use(require('cors')()) 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(session({
@@ -34,11 +34,13 @@ app.use(session({
 
 
 app.use('/users', usersController)
-app.use('/items', isLoggedIn, itemController);
-
+app.use('/items', itemController);
+app.get('/login', (req, res) => {
+    res.render(props.Login)
+})
 
 
 const port = process.env.PORT || 3001
 app.listen(port, () => {
-    console.log('app is running')
+    console.log(`app is running on port ${port}`)
 })
