@@ -48,7 +48,7 @@ router.post("/login", async (req, res)=>{
                 res.send(200)
                 //res.redirect("/create") // <- No more redirect in this case - the browser frontend code manages its own state
             }else{
-                res.send(JSON.stringify({ error: 'password does not match recoreds'}))
+                res.send(JSON.stringify({ error: 'password does not match records'}))
                 
                 // EDWARD: Don't redirect in this case, instead send back a 401 UNAUTHORIZED
                 res.send(401)
