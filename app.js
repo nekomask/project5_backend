@@ -23,7 +23,9 @@ db.on('error', err => console.log(err.message + ' is Mongod not running?'))
 db.on('disconnected', () => console.log('mongo disconnected'))
 
 app.use(morgan('short'))
-app.use(require('cors')()) 
+app.use(cors({
+    origin: ['https://mybikedatabase.up.railway.app', 'https://mybikedatabase-backend.up.railway.app']
+}));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(session({
