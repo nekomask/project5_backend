@@ -45,5 +45,4 @@ app.get('/login', (req, res) => {
 const port = process.env.PORT || 3001
 app.listen(port, () => {
     console.log(`app is running on port ${port}`)
-    console.log(process.env.ORIGIN_HEADERS.split(" "))
 })
