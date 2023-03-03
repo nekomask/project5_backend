@@ -24,7 +24,7 @@ db.on('disconnected', () => console.log('mongo disconnected'))
 
 app.use(morgan('short'))
 app.use(cors({
-    origin: ['https://mybikedatabase.up.railway.app', 'https://mybikedatabase-backend.up.railway.app', 'https://my-bike-database-backend.onrender.com','https://my-bike-database.onrender.com']
+    origin: [process.env.ORIGIN_HEADERS]
 }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
