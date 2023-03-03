@@ -24,7 +24,7 @@ db.on('disconnected', () => console.log('mongo disconnected'))
 
 app.use(morgan('short'))
 app.use(cors({
-    origin: [process.env.ORIGIN_HEADERS]
+    origin: process.env.ORIGIN_HEADERS.split(" ")
 }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -45,4 +45,5 @@ app.get('/login', (req, res) => {
 const port = process.env.PORT || 3001
 app.listen(port, () => {
     console.log(`app is running on port ${port}`)
+    console.log(process.env.ORIGIN_HEADERS.split(" "))
 })
