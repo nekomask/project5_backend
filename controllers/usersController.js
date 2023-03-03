@@ -38,7 +38,7 @@ router.post("/login", async (req, res)=>{
                 // It's a match! Successful login!
                 req.session.isLoggedIn = true;
                 req.session.userId = possibleUser._id;
-                res.status(200).json({ success: true, key: possibleUser._id });
+                res.status(200).json({ success: true, key: possibleUser._id, username: possibleUser.username });
              
             }else{
                 res.send(JSON.stringify({ error: 'password does not match records'}))
@@ -48,8 +48,6 @@ router.post("/login", async (req, res)=>{
             }
         }else{
             // Let them try again?
-
-            // EDWARD: You can't alert here, this is the API.  Send back JSON
             res.send(JSON.stringify({ error: 'User name does not exist'}))
 
             // EDWARD: Don't redirect in this case, instead send back a 401 UNAUTHORIZED
@@ -61,11 +59,15 @@ router.post("/login", async (req, res)=>{
     }
 })
 
-// router.get('/logout', (req, res)=>{
-//     req.session.destroy(()=>{
-//         res.redirect("/items")
-//     })
-// })
+router.post('/logout', (req, res)=>{
+    req.session.destroy((err)=> {
+    if (err) {
+        console.log(err);
+    }else{
+        res.clearCookie('sid')
+        }
+    })
+})
 
 router.get('/',  async (req, res)=>{
     const users = await User.find();
