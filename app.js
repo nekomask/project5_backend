@@ -24,7 +24,8 @@ db.on('disconnected', () => console.log('mongo disconnected'))
 
 app.use(morgan('short'))
 app.use(cors({
-    origin: process.env.ORIGIN_HEADERS.split(" ")
+    origin: ["http://localhost:3000", "https://mybikedatabase.up.railway.app", "https://mybikedatabase-backend.up.railway.app", "https://my-bike-database-backend.onrender.com", "https://my-bike-database.onrender.com"],
+    credentials: true
 }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -45,4 +46,5 @@ app.get('/login', (req, res) => {
 const port = process.env.PORT || 3001
 app.listen(port, () => {
     console.log(`app is running on port ${port}`)
+    console.log(process.env.ORIGIN_HEADERS)
 })
