@@ -3,30 +3,45 @@ const router = express();
 const Item = require('../models/item')
 //index route
 router.get('/', async (req, res) => {
-    //if the data is good we get our item objects
     try {
-        const items = await Item.find();
-        res.send({
-            success: true,
-            data: items
-        })
-        //if there is an error we're going to send this object; we don't want to map over errors and try to render them
-    } catch(err) {
+        if (req.session.userId) {
+            const items = await Item.find({ user: req.session.userId });
+            res.send({
+                success: true,
+                data: items
+            });
+        } else {
+            throw new Error('User not logged in');
+        }
+    } catch (err) {
         res.send({
             success: false,
             data: err.message
-        })
+        });
     }
-})
+});
+
 //create route
 router.post('/', async (req, res) => {
     try {
-        const newItem = await Item.create(req.body);
-        //we used to redirect to the index or the show route, but now we're just sending back a JSON response 
-        res.send({
-            success: true,
-            data: newItem
-        })
+        // Check if user is logged in
+        if (req.session.userId) {
+            const user = await User.findById(req.session.userId);
+            if (user) {
+                req.body.user = user._id;
+                const newItem = await Item.create(req.body);
+                user.bikes.push(newItem._id);
+                await user.save();
+                res.send({
+                    success: true,
+                    data: newItem
+                });
+            } else {
+                throw new Error('User not found');
+            }
+        } else {
+            throw new Error('User not logged in');
+        }
     } catch (err) {
         console.log(err);
         res.send({
@@ -35,6 +50,7 @@ router.post('/', async (req, res) => {
         })
     }
 })
+
 //show route
 router.get('/:id', async (req, res) => {
     try {
