@@ -11,10 +11,20 @@ router.get('/', jwtMiddleware, async (req, res) => {
     try {
         if (req.user) {
             const items = await Item.find({ user: req.user._id });
-            res.send({
-                success: true,
-                data: items
-            });
+
+            if (items.length === 0) {
+                res.send({
+                    success: true,
+                    data: items,
+                    message: items.length === 0 ? 'No bikes found. You have not submitted any bikes yet.' : null
+                });
+            } else {
+                res.send({
+                    success: true,
+                    data: items
+                });
+            }
+
         } else {
             throw new Error('User not logged in');
         }
@@ -61,7 +71,7 @@ router.post('/', jwtMiddleware, async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const item = await Item.findById(req.params.id);
-        if(!item){
+        if (!item) {
             throw new Error("No item by that ID here!")
         }
         res.send({
@@ -96,7 +106,7 @@ router.delete('/:id', async (req, res) => {
 //{returnOriginal: false} is an option added to the findByIdAndUpdate method to yield an updated value as a response
 router.put('/:id', async (req, res) => {
     try {
-        const item = await Item.findByIdAndUpdate(req.params.id, req.body, {returnOriginal: false});
+        const item = await Item.findByIdAndUpdate(req.params.id, req.body, { returnOriginal: false });
         res.send({
             success: true,
             data: item
