@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const isLoggedIn = require('../middleware/isLoggedIn')
+const jwt = require('jsonwebtoken');
 
 
 // INDEX: GET
@@ -24,58 +25,6 @@ router.get('/', async (req, res)=>{
 }
 })
 
-router.post("/login", async (req, res)=>{
-    try{
-        // Grab the user from the database with the username from the form
-        const possibleUser = await User.findOne({username: req.body.username})
-        console.log(possibleUser)
-        if(possibleUser){
-            // There is a user with this username!
-            console.log(possibleUser.password)
-            console.log(req.body.password)
-            // Compare the password from the form with the database password
-            if(bcrypt.compareSync(req.body.password, possibleUser.password)){
-                // It's a match! Successful login!
-                req.session.isLoggedIn = true;
-                req.session.userId = possibleUser._id;
-                res.status(200).json({ success: true, key: possibleUser._id, username: possibleUser.username });
-             
-            }else{
-                res.send(JSON.stringify({ error: 'password does not match records'}))
-                
-                // EDWARD: Don't redirect in this case, instead send back a 401 UNAUTHORIZED
-                res.send(401).json
-            }
-        }else{
-            // Let them try again?
-            res.send(JSON.stringify({ error: 'User name does not exist'}))
-
-            // EDWARD: Don't redirect in this case, instead send back a 401 UNAUTHORIZED
-            res.send(401).json
-        }
-    }catch(err){
-        console.log(err);
-        res.send(500)
-    }
-})
-
-router.post('/logout', (req, res)=>{
-    req.session.destroy((err)=> {
-    if (err) {
-        console.log(err);
-    }else{
-        res.clearCookie('sid')
-        }
-    })
-})
-
-router.get('/',  async (req, res)=>{
-    const users = await User.find();
-    res.send({
-        status: 200,
-        users: users
-    })
-})
 
 
 // SHOW: GET
@@ -93,31 +42,31 @@ router.get('/:id', async (req, res)=>{
 // CREATE: POST
 // /users
 // Creates an actual user, then...?
-router.post('/', async (req, res)=>{
-    try{
-        // req.body.password needs to be HASHED
-        console.log(req.body)
-        const hashedPassword = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10))
-        req.body.password = hashedPassword
-        const newUser = await User.create(req.body);
-        const user = await User.findOne({ username: req.body.username })
-        console.log("user\n", user)
-        if (user) {
-            req.session.isLoggedIn = true;
-            req.session.userId = user._id;
-            res.send({
-                status: 200,
-                data: newUser
-            })
-        }
-    }catch(err) {
-        console.log(err)
-        res.send({
-            status: 500,
-            data: "Sorry this username is already taken \n please try a different one"
-        })
+router.post('/', async (req, res) => {
+    try {
+      // Check if the user already exists
+      const existingUser = await User.findOne({ username: req.body.username });
+  
+      if (existingUser) {
+        return res.status(400).json({ error: "Username already exists." });
+      }
+  
+      // req.body.password needs to be HASHED
+      console.log(req.body);
+      const hashedPassword = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
+      req.body.password = hashedPassword;
+      const newUser = await User.create(req.body);
+      console.log("user\n", newUser);
+  
+      req.session.isLoggedIn = true;
+      req.session.userId = newUser._id;
+      res.status(201).json({ status: 201, data: newUser });
+  
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Server error. Please try again later." });
     }
-})
+  });
 
 // EDIT: GET
 // /users/:id/edit
@@ -167,5 +116,6 @@ router.delete('/:id', async (req, res)=>{
         res.sendStatus(500)
     }
 })
+
 
 module.exports = router;

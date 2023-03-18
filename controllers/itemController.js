@@ -1,11 +1,16 @@
 const express = require('express');
-const router = express();
+const router = express.Router();
 const Item = require('../models/item')
+const User = require('../models/users')
+const jwtMiddleware = require('../middleware/jsonwebtokenMiddleware')
+
+
+
 //index route
-router.get('/', async (req, res) => {
+router.get('/', jwtMiddleware, async (req, res) => {
     try {
-        if (req.session.userId) {
-            const items = await Item.find({ user: req.session.userId });
+        if (req.user) {
+            const items = await Item.find({ user: req.user._id });
             res.send({
                 success: true,
                 data: items
@@ -22,11 +27,11 @@ router.get('/', async (req, res) => {
 });
 
 //create route
-router.post('/', async (req, res) => {
+router.post('/', jwtMiddleware, async (req, res) => {
     try {
         // Check if user is logged in
-        if (req.session.userId) {
-            const user = await User.findById(req.session.userId);
+        if (req.user) {
+            const user = await User.findById(req.user._id);
             if (user) {
                 req.body.user = user._id;
                 const newItem = await Item.create(req.body);
@@ -50,6 +55,7 @@ router.post('/', async (req, res) => {
         })
     }
 })
+
 
 //show route
 router.get('/:id', async (req, res) => {
