@@ -44,7 +44,7 @@ app.use(session({
 app.use('/items', jwtMiddleware, itemController);
 app.use('/login', loginController);
 app.use('/logout', logoutController);
-app.use('/users', jwtMiddleware, usersController)
+app.use('/users', usersController)
 
 
 app.get('/verifyToken', (req, res) => {
