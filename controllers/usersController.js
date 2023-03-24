@@ -50,12 +50,12 @@ router.get('/:id', async (req, res) => {
 router.post('/register', async (req, res) => {
     try {
         // Check if the user already exists
-        const existingUser = await User.findOne({ username: req.body.username });
+        const existingUser = await User.findOne({ username: req.body.username.toLowerCase() });
 
         if (existingUser) {
             return res.status(400).json({ error: "Username already exists." });
         }
-        const existingEmail = await User.findOne({ email: req.body.email });
+        const existingEmail = await User.findOne({ email: req.body.email.toLowerCase() });
 
         if (existingEmail) {
             return res.status(400).json({ error: "Sorry, that email is already registered to an account." });
@@ -72,7 +72,7 @@ router.post('/register', async (req, res) => {
 
         // req.body.password needs to be HASHED
         console.log(req.body);
-        const hashedPassword = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
+        const hashedPassword = await bcrypt.hashSync(req.body.password, 10);
         req.body.password = hashedPassword;
         const newUser = await User.create(req.body);
         console.log("user\n", newUser);
@@ -117,7 +117,15 @@ router.get('/:id/edit', async (req, res) => {
 // UPDATE THE USER WITH THE SPECIFIC ID
 router.put('/:id', async (req, res) => {
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body)
+        //Hash the new Password
+        const HashedPassword = await bcrypt.hashSync(req.body.password, 10);
+        //update the user document in the database
+        const user = await User.findByIdAndUpdate(req.params.id, {
+            username: req.body.username,
+            password: hashedPassword,
+            email: req.body.email,
+            mod: req.body.mod
+        });
         res.send({
             status: 200,
             data: user

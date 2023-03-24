@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 router.post("/", async (req, res) => {
     try{
         // Grab the user from the database with the username from the form
-        const possibleUser = await User.findOne({username: req.body.username})
+        const possibleUser = await User.findOne({username: req.body.username.toLowerCase()})
         console.log(possibleUser)
         if(possibleUser){
             // There is a user with this username!
