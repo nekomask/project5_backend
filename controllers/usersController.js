@@ -118,7 +118,7 @@ router.get('/:id/edit', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         //Hash the new Password
-        const HashedPassword = await bcrypt.hashSync(req.body.password, 10);
+        const hashedPassword = await bcrypt.hashSync(req.body.password, 10);
         //update the user document in the database
         const user = await User.findByIdAndUpdate(req.params.id, {
             username: req.body.username,
